@@ -18,6 +18,7 @@ pub fn build_ui() -> impl Widget<AppState> {
             (AppState::default_sink, AppState::sinks),
         ));
     let settings_button = Button::new("Settings").on_click(|ctx, data: &mut AppState, env| {
+        data.close_on_leave = false;
         ctx.new_sub_window(
             WindowConfig::default()
                 // .set_level(WindowLevel::AppWindow)

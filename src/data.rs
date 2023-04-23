@@ -21,6 +21,7 @@ pub struct AppState {
     pub default_sink: String,
     pulsewrapper: Arc<RefCell<PulseWrapper>>,
     pub use_dark_theme: bool,
+    pub close_on_leave: bool,
 }
 
 #[derive(Clone, Data, Lens)]
@@ -110,6 +111,7 @@ impl AppState {
             default_sink: default_sink,
             pulsewrapper: pulsewrapper,
             use_dark_theme: config.use_dark_theme,
+            close_on_leave: true,
         }
     }
 

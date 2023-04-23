@@ -1,4 +1,6 @@
 use druid::{AppLauncher, Screen, WindowDesc};
+use druid::{Env, Event, EventCtx, InternalEvent, Widget, WidgetExt};
+use druid::widget::Controller;
 use mouse_position::mouse_position::Mouse;
 use num;
 
@@ -15,7 +17,7 @@ pub const MAIN_WINDOW_HEIGHT: f64 = 400.0;
 fn main() {
     let mut state = AppState::new();
 
-    let main_window = WindowDesc::new(ui::build_ui())
+    let main_window = WindowDesc::new(ui::build_ui().controller(WindowController))
         .window_size((MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT))
         .resizable(false)
         .set_position(get_position())
@@ -52,5 +54,28 @@ pub fn get_position() -> (f64, f64) {
             middle_x - (MAIN_WINDOW_WIDTH / 2.0),
             middle_y - (MAIN_WINDOW_HEIGHT / 2.0),
         ),
+    }
+}
+
+struct WindowController;
+
+impl<W: Widget<AppState>> Controller<AppState, W> for WindowController {
+    fn event(
+        &mut self,
+        child: &mut W,
+        ctx: &mut EventCtx,
+        event: &Event,
+        data: &mut AppState,
+        env: &Env,
+    ) {
+        match event {
+            Event::Internal(InternalEvent::MouseLeave) => {
+                if data.close_on_leave {
+                    ctx.window().close();
+                }
+            }
+            _ => ()
+        };
+        child.event(ctx, event, data, env)
     }
 }
