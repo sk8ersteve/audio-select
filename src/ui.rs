@@ -1,11 +1,8 @@
 use crate::data::{AppState, AudioDeviceState, AudioDeviceType};
-use druid::widget::LensWrap;
 use druid::widget::{
-    Button, Checkbox, CrossAxisAlignment, Either, Flex, Label, List, Scroll, SizedBox, Split, TextBox,
+    Button, Checkbox, CrossAxisAlignment, Either, Flex, Label, LensWrap, List, Scroll, SizedBox, Split, TextBox,
 };
-use druid::Size;
-use druid::WindowConfig;
-use druid::{Env, EventCtx, Widget, WidgetExt};
+use druid::{Env, EventCtx, Size, Widget, WidgetExt, WindowConfig};
 
 pub fn build_ui() -> impl Widget<AppState> {
     let body = Flex::column()
