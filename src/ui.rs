@@ -1,7 +1,7 @@
 use crate::data::{AppState, AudioDeviceState, AudioDeviceType};
 use druid::widget::LensWrap;
 use druid::widget::{
-    Button, CrossAxisAlignment, Either, Flex, Label, List, Scroll, SizedBox, Split, TextBox,
+    Button, Checkbox, CrossAxisAlignment, Either, Flex, Label, List, Scroll, SizedBox, Split, TextBox,
 };
 use druid::Size;
 use druid::WindowConfig;
@@ -103,5 +103,8 @@ fn build_source_config() -> impl Widget<AudioDeviceState> {
                 .lens(AudioDeviceState::label)
                 .fix_width(590.0)
                 .padding(5.0),
+        )
+        .with_child(
+            Checkbox::new("Hide").lens(AudioDeviceState::hidden)
         )
 }

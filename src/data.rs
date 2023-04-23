@@ -59,7 +59,7 @@ impl AppState {
 
         let pulsewrapper = Arc::new(RefCell::new(pulsewrapper));
 
-        let mut config: AppConfig = confy::load_path("AudioSelect.toml").unwrap();
+        let mut config: AppConfig = confy::load("audio-select", None).unwrap();
         let mut sources = Vec::new();
         let mut sinks = Vec::new();
 
