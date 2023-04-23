@@ -46,11 +46,10 @@ impl PulseWrapper {
             .connect(None, pulse::context::FlagSet::NOFLAGS, None)
             .is_err()
         {
-            println!("[PAInterface] Error while connecting context");
+            eprintln!("[PAInterface] Error while connecting context");
             // return Err(PAError::MainloopConnectError.into());
         }
 
-        println!("[PAInterface] Waiting for context to be ready...");
         // wait for context to be ready
         loop {
             match self.mainloop.borrow_mut().iterate(false) {
@@ -72,7 +71,6 @@ impl PulseWrapper {
             }
         }
         self.connected = true;
-        println!("[PAInterface] Context ready");
     }
 
     pub fn disconnect(&mut self) {
@@ -159,11 +157,29 @@ impl PulseWrapper {
     }
 
     pub fn set_default_source(&mut self, name: &str) {
-        println!("Set default to {}", name);
+        let op = self.context.borrow_mut().set_default_source(name, |_| ());
+        while op.get_state() == State::Running {
+            match self.mainloop.borrow_mut().iterate(true) {
+                IterateResult::Quit(_) | IterateResult::Err(_) => {
+                    eprintln!("Iterate state was not success, quitting...");
+                    // return result;
+                }
+                IterateResult::Success(_) => {}
+            }
+        }
     }
 
     pub fn set_default_sink(&mut self, name: &str) {
-        println!("Set default to {}", name);
+        let op = self.context.borrow_mut().set_default_sink(name, |_| ());
+        while op.get_state() == State::Running {
+            match self.mainloop.borrow_mut().iterate(true) {
+                IterateResult::Quit(_) | IterateResult::Err(_) => {
+                    eprintln!("Iterate state was not success, quitting...");
+                    // return result;
+                }
+                IterateResult::Success(_) => {}
+            }
+        }
     }
 }
 

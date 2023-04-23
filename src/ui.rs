@@ -1,6 +1,7 @@
 use crate::data::{AppState, AudioDeviceState, AudioDeviceType};
 use druid::widget::{
-    Button, Checkbox, CrossAxisAlignment, Either, Flex, Label, LensWrap, List, Scroll, SizedBox, Split, TextBox,
+    Button, Checkbox, CrossAxisAlignment, Either, Flex, Label, LensWrap, List, Scroll, SizedBox,
+    Split, TextBox,
 };
 use druid::{Env, EventCtx, Size, Widget, WidgetExt, WindowConfig};
 
@@ -78,16 +79,27 @@ fn build_device_button() -> impl Widget<(String, AudioDeviceState)> {
 }
 
 fn build_config_menu() -> impl Widget<AppState> {
-    Flex::column()
+    let body = Flex::column()
         .with_child(Label::new("Settings"))
         // .with_child(TextBox::new().lens(AppState::default_source))
-        .with_child(LensWrap::new(
-            List::new(build_source_config),
-            AppState::sources,
-        ))
+        .with_child(Label::new("Input Devices:"))
+        .with_child(List::new(build_device_config).lens(AppState::sources))
+        .with_child(Label::new("Output Devices:"))
+        .with_child(List::new(build_device_config).lens(AppState::sinks));
+    let save_button =
+        Button::new("Save").on_click(|_: &mut EventCtx, data: &mut AppState, _: &Env| {
+            data.save_config();
+        });
+    Split::rows(
+        Scroll::new(body).vertical(),
+        Flex::row().with_child(save_button),
+    )
+    .split_point(0.9)
+    .bar_size(3.0)
+    .solid_bar(true)
 }
 
-fn build_source_config() -> impl Widget<AudioDeviceState> {
+fn build_device_config() -> impl Widget<AudioDeviceState> {
     Flex::column()
         .cross_axis_alignment(CrossAxisAlignment::Start)
         .with_child(
@@ -98,10 +110,13 @@ fn build_source_config() -> impl Widget<AudioDeviceState> {
         .with_child(
             TextBox::new()
                 .lens(AudioDeviceState::label)
-                .fix_width(590.0)
-                .padding(5.0),
+                .padding(5.0)
+                .fix_width(590.0),
         )
         .with_child(
-            Checkbox::new("Hide").lens(AudioDeviceState::hidden)
+            Checkbox::new("Hide")
+                .lens(AudioDeviceState::hidden)
+                .padding(5.0),
         )
+        .padding((0.0, 5.0))
 }

@@ -28,25 +28,29 @@ fn main() {
 }
 
 pub fn get_position() -> (f64, f64) {
-    let screen_size = Screen::get_display_rect();
-    let middle_x = (screen_size.x0 + screen_size.x1) / 2.0;
-    let middle_y = (screen_size.y0 + screen_size.y1) / 2.0;
+    let druid::Rect { x0, x1, y0, y1 } = Screen::get_display_rect();
+    let middle_x = (x0 + x1) / 2.0;
+    let middle_y = (y0 + y1) / 2.0;
+    // match Mouse::get_mouse_position() {
+    //     Mouse::Position { x, y } => { println!("{}, {}", x, y); },
+    //     Mouse::Error => (),
+    // };
     match Mouse::get_mouse_position() {
-        Mouse::Position { x, y } => { println!("{}, {}", x, y); },
-        Mouse::Error => (),
-    };
-    match Mouse::get_mouse_position() {
-        Mouse::Position { x, y } => {(
-            num::clamp((x as f64) - MAIN_WINDOW_WIDTH / 2.0, screen_size.x0 + 5.0, screen_size.x1 - MAIN_WINDOW_WIDTH - 5.0),
+        Mouse::Position { x, y } => (
+            num::clamp(
+                (x as f64) - MAIN_WINDOW_WIDTH / 2.0,
+                x0 + 5.0,
+                x1 - MAIN_WINDOW_WIDTH - 5.0,
+            ),
             if (y as f64) < middle_y {
-                (y as f64) + 5.0
+                (y as f64) + 10.0
             } else {
-                (y as f64) - MAIN_WINDOW_HEIGHT - 35.0
-            }
-        )},
-        Mouse::Error => {(
+                (y as f64) - MAIN_WINDOW_HEIGHT - 45.0
+            },
+        ),
+        Mouse::Error => (
             middle_x - (MAIN_WINDOW_WIDTH / 2.0),
-            middle_y - (MAIN_WINDOW_HEIGHT / 2.0)
-        )},
+            middle_y - (MAIN_WINDOW_HEIGHT / 2.0),
+        ),
     }
 }

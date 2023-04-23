@@ -34,9 +34,9 @@ pub struct AudioDeviceState {
 
 #[derive(Serialize, Clone, Deserialize, Debug)]
 pub struct AppConfig {
+    pub use_dark_theme: bool,
     pub sources: Vec<AudioDeviceConfig>,
     pub sinks: Vec<AudioDeviceConfig>,
-    pub use_dark_theme: bool,
 }
 
 #[derive(Serialize, Clone, Deserialize, Debug)]
@@ -120,8 +120,30 @@ impl AppState {
     }
 
     pub fn save_config(&mut self) {
-        // save config
-        // *self = Self::new();
+        let config = AppConfig {
+            use_dark_theme: self.use_dark_theme,
+            sources: self
+                .sources
+                .iter()
+                .map(|x| x.convert_to_config())
+                .collect::<Vec<_>>(),
+            sinks: self
+                .sinks
+                .iter()
+                .map(|x| x.convert_to_config())
+                .collect::<Vec<_>>(),
+        };
+        confy::store("audio-select", None, config).expect("FAIL");
+    }
+}
+
+impl AudioDeviceState {
+    fn convert_to_config(&self) -> AudioDeviceConfig {
+        AudioDeviceConfig {
+            name: self.name.clone(),
+            label: self.label.clone(),
+            hidden: self.hidden,
+        }
     }
 }
 
@@ -129,9 +151,9 @@ impl Default for AppConfig {
     fn default() -> Self {
         AppConfig {
             // default_source_name: Some(String::from("test")),
+            use_dark_theme: true,
             sources: Vec::new(),
             sinks: Vec::new(),
-            use_dark_theme: true,
         }
     }
 }
