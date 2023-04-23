@@ -49,7 +49,7 @@ pub fn build_ui() -> impl Widget<AppState> {
 
 fn build_device_button() -> impl Widget<(String, AudioDeviceState)> {
     Either::new(
-        |data, _env| data.1.hidden,
+        |data, _env| data.1.hidden || !data.1.connected,
         SizedBox::empty(),
         Button::new(|data: &(String, AudioDeviceState), _: &Env| {
             let len = data.1.label.len();
@@ -120,4 +120,5 @@ fn build_device_config() -> impl Widget<AudioDeviceState> {
                 .padding(5.0),
         )
         .padding((0.0, 5.0))
+        .disabled_if(|data, _env| !data.connected)
 }

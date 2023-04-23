@@ -29,7 +29,8 @@ pub struct AudioDeviceState {
     pub label: String,
     pub name: String,
     pub device_type: AudioDeviceType,
-    pub hidden: bool,
+    pub connected: bool, // true if device is recognized by pulseaudio
+    pub hidden: bool, // true if user decides to hide device
     pub pulsewrapper: Arc<RefCell<PulseWrapper>>,
 }
 
@@ -65,22 +66,24 @@ impl AppState {
         let mut sinks = Vec::new();
 
         for source in &mut config.sources {
-            let not_found = pa_source_map.remove(&source.name).is_none();
+            let connected = pa_source_map.remove(&source.name).is_some();
             sources.push(AudioDeviceState {
                 name: source.name.clone(),
                 label: source.label.clone(),
                 device_type: AudioDeviceType::SOURCE,
-                hidden: source.hidden || not_found,
+                connected: connected,
+                hidden: source.hidden,
                 pulsewrapper: pulsewrapper.clone(),
             });
         }
         for sink in &mut config.sinks {
-            let not_found = pa_sink_map.remove(&sink.name).is_none();
+            let connected = pa_sink_map.remove(&sink.name).is_some();
             sinks.push(AudioDeviceState {
                 name: sink.name.clone(),
                 label: sink.label.clone(),
                 device_type: AudioDeviceType::SINK,
-                hidden: sink.hidden || not_found,
+                connected: connected,
+                hidden: sink.hidden,
                 pulsewrapper: pulsewrapper.clone(),
             });
         }
@@ -90,6 +93,7 @@ impl AppState {
                 name: source.clone(),
                 label: label.clone(),
                 device_type: AudioDeviceType::SOURCE,
+                connected: true,
                 hidden: false,
                 pulsewrapper: pulsewrapper.clone(),
             });
@@ -99,6 +103,7 @@ impl AppState {
                 name: sink.clone(),
                 label: label.clone(),
                 device_type: AudioDeviceType::SINK,
+                connected: true,
                 hidden: false,
                 pulsewrapper: pulsewrapper.clone(),
             });
