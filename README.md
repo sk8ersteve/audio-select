@@ -7,9 +7,11 @@ for your PulseAudio deamon.
 
 Audio-select uses `libpulse-binding` to get the lists of active pulseaudio sinks
 and sources, so any virtual devices and their "`.monitor`"s will appear (some
-apps don't show these monitor devices limiting overall configurability). There's
-also a UI for hiding or labeling some of these devices with an option to save a
-toml file to the correct config folder.
+apps don't show these monitor devices limiting overall configurability). 
+
+There's also a UI for hiding or labeling some of these devices. Hitting save
+saves a toml config to the default config folder (usually
+~/.config/audio-select/default-config.toml).
 
 ### Windowing
 

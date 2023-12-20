@@ -15,13 +15,13 @@ pub const MAIN_WINDOW_WIDTH: f64 = 300.0;
 pub const MAIN_WINDOW_HEIGHT: f64 = 400.0;
 
 fn main() {
-    let mut state = AppState::new();
+    let state = AppState::new();
 
     let main_window = WindowDesc::new(ui::build_ui().controller(WindowController))
         .window_size((MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT))
         .resizable(false)
         .set_position(get_position())
-        .title("My first Druid App");
+        .title("Audio Select");
 
     AppLauncher::with_window(main_window)
         .configure_env(theme::setup)

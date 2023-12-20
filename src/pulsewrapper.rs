@@ -9,6 +9,11 @@ use std::ops::Deref;
 use std::rc::Rc;
 use std::vec::Vec;
 
+pub enum PulseWrapperError {
+    Ok,
+    Err,
+}
+
 pub struct PulseWrapper {
     mainloop: Rc<RefCell<Mainloop>>,
     context: Rc<RefCell<Context>>,
@@ -39,15 +44,15 @@ impl PulseWrapper {
         }
     }
 
-    pub fn connect(&mut self) {
+    pub fn connect(&mut self) -> PulseWrapperError  {
         if self
             .context
             .borrow_mut()
             .connect(None, pulse::context::FlagSet::NOFLAGS, None)
             .is_err()
         {
-            eprintln!("[PAInterface] Error while connecting context");
-            // return Err(PAError::MainloopConnectError.into());
+            return PulseWrapperError::Err;
+            // eprintln!("[PAInterface] Error while connecting context");
         }
 
         // wait for context to be ready
@@ -55,7 +60,7 @@ impl PulseWrapper {
             match self.mainloop.borrow_mut().iterate(false) {
                 IterateResult::Quit(_) | IterateResult::Err(_) => {
                     eprintln!("Iterate state was not success, quitting...");
-                    return;
+                    return PulseWrapperError::Err;
                 }
                 IterateResult::Success(_) => {}
             }
@@ -65,12 +70,13 @@ impl PulseWrapper {
                 }
                 pulse::context::State::Failed | pulse::context::State::Terminated => {
                     eprintln!("Context state failed/terminated, quitting...");
-                    return;
+                    return PulseWrapperError::Err;
                 }
                 _ => {}
             }
         }
         self.connected = true;
+        PulseWrapperError::Ok
     }
 
     pub fn disconnect(&mut self) {

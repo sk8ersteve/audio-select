@@ -1,6 +1,6 @@
 use crate::data::AppState;
 pub use druid::theme::*;
-use druid::{Color, Env, FontDescriptor, FontFamily, FontWeight, Insets, Key, Size};
+use druid::{Color, Env, Insets, Key};
 
 pub fn grid(m: f64) -> f64 {
     GRID * m
@@ -24,14 +24,14 @@ pub const MENU_BUTTON_BG_INACTIVE: Key<Color> = Key::new("app.menu-bg-inactive")
 pub const MENU_BUTTON_FG_ACTIVE: Key<Color> = Key::new("app.menu-fg-active");
 pub const MENU_BUTTON_FG_INACTIVE: Key<Color> = Key::new("app.menu-fg-inactive");
 
-pub const UI_FONT_MEDIUM: Key<FontDescriptor> = Key::new("app.ui-font-medium");
-pub const UI_FONT_MONO: Key<FontDescriptor> = Key::new("app.ui-font-mono");
-pub const TEXT_SIZE_SMALL: Key<f64> = Key::new("app.text-size-small");
+// pub const UI_FONT_MEDIUM: Key<FontDescriptor> = Key::new("app.ui-font-medium");
+// pub const UI_FONT_MONO: Key<FontDescriptor> = Key::new("app.ui-font-mono");
+// pub const TEXT_SIZE_SMALL: Key<f64> = Key::new("app.text-size-small");
 
 pub const ICON_COLOR: Key<Color> = Key::new("app.icon-color");
-pub const ICON_SIZE_SMALL: Size = Size::new(14.0, 14.0);
-pub const ICON_SIZE_MEDIUM: Size = Size::new(16.0, 16.0);
-pub const ICON_SIZE_LARGE: Size = Size::new(22.0, 22.0);
+// pub const ICON_SIZE_SMALL: Size = Size::new(14.0, 14.0);
+// pub const ICON_SIZE_MEDIUM: Size = Size::new(16.0, 16.0);
+// pub const ICON_SIZE_LARGE: Size = Size::new(22.0, 22.0);
 
 pub fn setup(env: &mut Env, state: &AppState) {
     if state.use_dark_theme {

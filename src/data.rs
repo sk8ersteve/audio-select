@@ -1,5 +1,5 @@
-use crate::pulsewrapper::PulseWrapper;
-use druid::{Data, Lens};
+use crate::pulsewrapper::{PulseWrapper, PulseWrapperError};
+use druid::{Data, Lens, ExtEventSink};
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
@@ -15,6 +15,8 @@ pub enum AudioDeviceType {
 
 #[derive(Clone, Data, Lens)]
 pub struct AppState {
+    pub ready: bool,
+    pub not_ready_string: String,
     sources: Arc<Vec<AudioDeviceState>>,
     sinks: Arc<Vec<AudioDeviceState>>,
     pub default_source: String,
@@ -50,8 +52,23 @@ pub struct AudioDeviceConfig {
 
 impl AppState {
     pub fn new() -> Self {
+        let mut config: AppConfig = confy::load("audio-select", None).unwrap();
+
         let mut pulsewrapper = PulseWrapper::new();
-        pulsewrapper.connect();
+
+        if let PulseWrapperError::Err = pulsewrapper.connect() {
+            return AppState {
+                ready: false,
+                not_ready_string: String::from("Failed to connect to PulseAudio"),
+                sources: Arc::new(Vec::new()),
+                sinks: Arc::new(Vec::new()),
+                default_source: String::new(),
+                default_sink: String::new(),
+                pulsewrapper: Arc::new(RefCell::new(pulsewrapper)),
+                use_dark_theme: config.use_dark_theme,
+                close_on_leave: true,
+            };
+        }
 
         let (default_source, default_sink) = pulsewrapper.get_defaults();
         let pa_sources = pulsewrapper.get_sources();
@@ -61,7 +78,6 @@ impl AppState {
 
         let pulsewrapper = Arc::new(RefCell::new(pulsewrapper));
 
-        let mut config: AppConfig = confy::load("audio-select", None).unwrap();
         let mut sources = Vec::new();
         let mut sinks = Vec::new();
 
@@ -110,6 +126,8 @@ impl AppState {
         }
 
         AppState {
+            ready: true,
+            not_ready_string: String::new(),
             sources: Arc::new(sources),
             sinks: Arc::new(sinks),
             default_source: default_source,
@@ -118,6 +136,14 @@ impl AppState {
             use_dark_theme: config.use_dark_theme,
             close_on_leave: true,
         }
+    }
+
+    pub fn restart_async(&mut self, ext_ctx: ExtEventSink) {
+        self.ready = false;
+        self.not_ready_string = String::from("Restarting PulseAudio");
+        ext_ctx.add_idle_callback(move |data: &mut Self| {
+            data.restart();
+        })
     }
 
     pub fn restart(&mut self) {

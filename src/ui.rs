@@ -6,6 +6,16 @@ use druid::widget::{
 use druid::{Env, EventCtx, Size, Widget, WidgetExt, WindowConfig};
 
 pub fn build_ui() -> impl Widget<AppState> {
+    Either::new(
+        |data, _env| data.ready,
+        build_devices_screen(),
+        Label::new(|data: &String, _env: &_| format!("{}:", data))
+            .lens(AppState::not_ready_string)
+            .center(),
+    )
+}
+
+fn build_devices_screen() -> impl Widget<AppState> {
     let body = Flex::column()
         .with_child(Label::new("Input").padding(5.0).center())
         .with_child(LensWrap::new(
@@ -29,8 +39,8 @@ pub fn build_ui() -> impl Widget<AppState> {
             env.clone(),
         );
     });
-    let restart_buton = Button::new("Restart").on_click(|_ctx, data: &mut AppState, _env| {
-        data.restart();
+    let restart_buton = Button::new("Restart").on_click(|ctx, data: &mut AppState, _env| {
+        data.restart_async(ctx.get_external_handle());
     });
 
     // Flex::column()
