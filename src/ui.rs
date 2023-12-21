@@ -62,12 +62,7 @@ fn build_device_button() -> impl Widget<(String, AudioDeviceState)> {
         |data, _env| data.1.hidden || !data.1.connected,
         SizedBox::empty(),
         Button::new(|data: &(String, AudioDeviceState), _: &Env| {
-            let len = data.1.label.len();
-            if len > 35 {
-                format!("{}...{}", &data.1.label[..20], &data.1.label[len - 15..])
-            } else {
-                format!("{}", &data.1.label)
-            }
+            get_shortened_label(&data.1.label)
         })
         .on_click(
             |_: &mut EventCtx, data: &mut (String, AudioDeviceState), _: &Env| {
@@ -131,4 +126,34 @@ fn build_device_config() -> impl Widget<AudioDeviceState> {
         )
         .padding((0.0, 5.0))
         .disabled_if(|data, _env| !data.connected)
+}
+
+fn get_shortened_label(label: &String) -> String {
+    if label.is_ascii() {
+        let len = label.len();
+        if len > 35 {
+            format!("{}...{}", &label[..20], &label[len - 15..])
+        } else {
+            format!("{}", &label)
+        }
+    } else {
+        let mut i: usize = 0;
+        let mut gap_start: usize = 0;
+        let mut gap_end: usize = 0;
+        let len = label.chars().count();
+        if len > 35 {
+            for (c_i, _) in label.char_indices() {
+                if i == 20 {
+                    gap_start = c_i;
+                } else if i == len - 15 {
+                    gap_end = c_i;
+                    break;
+                }
+                i += 1;
+            }
+            format!("{}...{}", &label[..gap_start], &label[gap_end..])
+        } else {
+            format!("{}", &label)
+        }
+    }
 }
