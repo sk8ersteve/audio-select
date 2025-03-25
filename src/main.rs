@@ -1,8 +1,7 @@
+use druid::widget::Controller;
 use druid::{AppLauncher, Screen, WindowDesc};
 use druid::{Env, Event, EventCtx, InternalEvent, Widget, WidgetExt};
-use druid::widget::Controller;
 use mouse_position::mouse_position::Mouse;
-use num;
 
 mod data;
 mod pulsewrapper;
@@ -68,14 +67,11 @@ impl<W: Widget<AppState>> Controller<AppState, W> for WindowController {
         data: &mut AppState,
         env: &Env,
     ) {
-        match event {
-            Event::Internal(InternalEvent::MouseLeave) => {
-                if data.close_on_leave {
-                    ctx.window().close();
-                }
+        if let Event::Internal(InternalEvent::MouseLeave) = event {
+            if data.close_on_leave {
+                ctx.window().close();
             }
-            _ => ()
-        };
+        }
         child.event(ctx, event, data, env)
     }
 }

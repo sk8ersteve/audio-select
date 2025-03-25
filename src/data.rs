@@ -1,5 +1,6 @@
+#![allow(clippy::arc_with_non_send_sync)]
 use crate::pulsewrapper::{PulseWrapper, PulseWrapperError};
-use druid::{Data, Lens, ExtEventSink};
+use druid::{Data, ExtEventSink, Lens};
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
@@ -9,8 +10,8 @@ use std::vec::Vec;
 
 #[derive(Clone, PartialEq, Data)]
 pub enum AudioDeviceType {
-    SOURCE,
-    SINK,
+    Source,
+    Sink,
 }
 
 #[derive(Clone, Data, Lens)]
@@ -32,7 +33,7 @@ pub struct AudioDeviceState {
     pub name: String,
     pub device_type: AudioDeviceType,
     pub connected: bool, // true if device is recognized by pulseaudio
-    pub hidden: bool, // true if user decides to hide device
+    pub hidden: bool,    // true if user decides to hide device
     pub pulsewrapper: Arc<RefCell<PulseWrapper>>,
 }
 
@@ -86,8 +87,8 @@ impl AppState {
             sources.push(AudioDeviceState {
                 name: source.name.clone(),
                 label: source.label.clone(),
-                device_type: AudioDeviceType::SOURCE,
-                connected: connected,
+                device_type: AudioDeviceType::Source,
+                connected,
                 hidden: source.hidden,
                 pulsewrapper: pulsewrapper.clone(),
             });
@@ -97,8 +98,8 @@ impl AppState {
             sinks.push(AudioDeviceState {
                 name: sink.name.clone(),
                 label: sink.label.clone(),
-                device_type: AudioDeviceType::SINK,
-                connected: connected,
+                device_type: AudioDeviceType::Sink,
+                connected,
                 hidden: sink.hidden,
                 pulsewrapper: pulsewrapper.clone(),
             });
@@ -108,7 +109,7 @@ impl AppState {
             sources.push(AudioDeviceState {
                 name: source.clone(),
                 label: label.clone(),
-                device_type: AudioDeviceType::SOURCE,
+                device_type: AudioDeviceType::Source,
                 connected: true,
                 hidden: false,
                 pulsewrapper: pulsewrapper.clone(),
@@ -118,7 +119,7 @@ impl AppState {
             sinks.push(AudioDeviceState {
                 name: sink.clone(),
                 label: label.clone(),
-                device_type: AudioDeviceType::SINK,
+                device_type: AudioDeviceType::Sink,
                 connected: true,
                 hidden: false,
                 pulsewrapper: pulsewrapper.clone(),
@@ -130,9 +131,9 @@ impl AppState {
             not_ready_string: String::new(),
             sources: Arc::new(sources),
             sinks: Arc::new(sinks),
-            default_source: default_source,
-            default_sink: default_sink,
-            pulsewrapper: pulsewrapper,
+            default_source,
+            default_sink,
+            pulsewrapper,
             use_dark_theme: config.use_dark_theme,
             close_on_leave: true,
         }

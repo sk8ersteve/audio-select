@@ -68,10 +68,10 @@ fn build_device_button() -> impl Widget<(String, AudioDeviceState)> {
             |_: &mut EventCtx, data: &mut (String, AudioDeviceState), _: &Env| {
                 let mut pulsewrapper = data.1.pulsewrapper.borrow_mut();
                 match data.1.device_type {
-                    AudioDeviceType::SOURCE => {
+                    AudioDeviceType::Source => {
                         pulsewrapper.set_default_source(&data.1.name);
                     }
-                    AudioDeviceType::SINK => {
+                    AudioDeviceType::Sink => {
                         pulsewrapper.set_default_sink(&data.1.name);
                     }
                 }
@@ -134,7 +134,7 @@ fn get_shortened_label(label: &String) -> String {
         if len > 35 {
             format!("{}...{}", &label[..20], &label[len - 15..])
         } else {
-            format!("{}", &label)
+            label.to_string()
         }
     } else {
         let mut i: usize = 0;
@@ -153,7 +153,7 @@ fn get_shortened_label(label: &String) -> String {
             }
             format!("{}...{}", &label[..gap_start], &label[gap_end..])
         } else {
-            format!("{}", &label)
+            label.to_string()
         }
     }
 }

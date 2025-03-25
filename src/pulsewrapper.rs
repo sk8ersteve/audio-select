@@ -44,7 +44,7 @@ impl PulseWrapper {
         }
     }
 
-    pub fn connect(&mut self) -> PulseWrapperError  {
+    pub fn connect(&mut self) -> PulseWrapperError {
         if self
             .context
             .borrow_mut()
